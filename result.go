@@ -1,8 +1,8 @@
 package client
 
 import (
-	"encoding/json"
 	"errors"
+	"github.com/goccy/go-json"
 	"gopkg.in/guregu/null.v4"
 	"reflect"
 )
