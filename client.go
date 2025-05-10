@@ -37,7 +37,7 @@ func NewRpcClient(addr string, opt *Option) (*RpcClient, error) {
 	}
 
 	var clientCodec rpc.ClientCodec
-	if opt.Codec == "goridge" {
+	if opt.Codec == goridgeCodec {
 		clientCodec = goridgeRpc.NewClientCodec(conn)
 	} else {
 		clientCodec = jsonrpc.NewClientCodec(conn)

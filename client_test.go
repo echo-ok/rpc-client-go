@@ -8,7 +8,7 @@ import (
 func TestNewRpcClient(t *testing.T) {
 	rpcClient, err := NewRpcClient("127.0.0.1:6001", &Option{
 		Network: "tcp",
-		Codec:   "json",
+		Codec:   jsonCodec,
 	})
 	if err != nil {
 		t.Fatal(err)
