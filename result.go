@@ -2,6 +2,7 @@ package client
 
 import (
 	"errors"
+	"fmt"
 	"github.com/goccy/go-json"
 	"gopkg.in/guregu/null.v4"
 	"reflect"
@@ -19,9 +20,20 @@ type Result struct {
 
 // ConvertDataTo 将 Data 数据提取到结构体
 func (r Result) ConvertDataTo(outputPtr any) error {
+	if outputPtr == nil {
+		return nil
+	}
+
 	// 检查 outputPtr 是否为指针
-	if reflect.ValueOf(outputPtr).Kind() != reflect.Ptr {
+	outputPtrType := reflect.ValueOf(outputPtr)
+	if outputPtrType.Kind() != reflect.Ptr {
 		return errors.New("outputPtr 必须是一个指针")
+	}
+
+	sourceDataKind := reflect.TypeOf(r.Data).Kind()
+	destinationDataKind := outputPtrType.Elem().Kind()
+	if sourceDataKind != destinationDataKind {
+		return fmt.Errorf("错误的类型：%s to %s", sourceDataKind.String(), destinationDataKind.String())
 	}
 
 	b, err := json.Marshal(r.Data)

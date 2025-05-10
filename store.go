@@ -6,8 +6,12 @@ import (
 
 type Configuration map[string]any
 
+func (c Configuration) read(key string) any {
+	return c[key]
+}
+
 func (c Configuration) GetString(key string) string {
-	return cast.ToString(c[key])
+	return cast.ToString(c.read(key))
 }
 
 type Store struct {
