@@ -1,9 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"github.com/samber/lo"
-	"go.uber.org/multierr"
 )
 
 type Reply struct {
@@ -28,7 +28,7 @@ func (r *Reply) Error() error {
 		if s == "" {
 			s = result.StoreName
 		}
-		err = multierr.Append(err, fmt.Errorf("%s: %s", s, result.Error.String))
+		err = errors.Join(err, fmt.Errorf("%s: %s", s, result.Error.String))
 	}
 
 	return err

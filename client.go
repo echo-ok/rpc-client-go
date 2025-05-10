@@ -1,8 +1,9 @@
 package client
 
 import (
+	"errors"
+	rrse "github.com/roadrunner-server/errors"
 	goridgeRpc "github.com/roadrunner-server/goridge/v3/pkg/rpc"
-	"go.uber.org/multierr"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
@@ -32,7 +33,7 @@ func NewRpcClient(addr string, opt *Option) (*RpcClient, error) {
 	}
 	conn, err := net.Dial(opt.Network, addr)
 	if err != nil {
-		return &RpcClient{}, err
+		return &RpcClient{}, rrse.E(rrse.Op("dial"), err)
 	}
 
 	var clientCodec rpc.ClientCodec
@@ -55,12 +56,12 @@ func NewRpcClient(addr string, opt *Option) (*RpcClient, error) {
 func (c *RpcClient) Close() {
 	if c.Conn != nil {
 		if err := c.Conn.Close(); err != nil {
-			c.Error = multierr.Append(c.Error, err)
+			c.Error = errors.Join(c.Error, rrse.E(rrse.Op("close"), err))
 		}
 	}
 	if c.Client != nil {
 		if err := c.Client.Close(); err != nil {
-			c.Error = multierr.Append(c.Error, err)
+			c.Error = errors.Join(c.Error, rrse.E(rrse.Op("close"), err))
 		}
 	}
 }
