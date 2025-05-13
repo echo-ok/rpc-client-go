@@ -20,7 +20,7 @@ type Result struct {
 
 // ConvertDataTo 将 Data 数据提取到结构体
 func (r Result) ConvertDataTo(outputPtr any) error {
-	if outputPtr == nil {
+	if outputPtr == nil || r.Data == nil {
 		return nil
 	}
 
