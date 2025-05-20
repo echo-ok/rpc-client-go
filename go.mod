@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/goccy/go-json v0.10.5
+	github.com/hiscaler/temu-go v0.0.0-20250517053320-d55bcc64d5f6
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/roadrunner-server/goridge/v3 v3.8.3
 	github.com/samber/lo v1.50.0
@@ -14,6 +15,8 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-ozzo/ozzo-validation/v4 v4.3.0 // indirect
+	github.com/hiscaler/gox v0.0.0-20250228092509-f9ac5d6ae7e3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect

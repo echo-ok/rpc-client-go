@@ -1,0 +1,8 @@
+{
+  "rpc_address": "127.0.0.1:6001",
+  "region": "US",
+  "app_key": "",
+  "app_secret": "",
+  "access_token": "",
+  "static_file_server": "https://127.0.0.1:6002"
+}
