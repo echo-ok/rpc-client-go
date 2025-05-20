@@ -24,10 +24,10 @@ func (r Result) ConvertDataTo(dstPtr any) error {
 		return nil
 	}
 
-	// 检查 outputPtr 是否为指针
+	// 检查 dstPtr 是否为指针
 	outputVal := reflect.ValueOf(dstPtr)
 	if outputVal.Kind() != reflect.Ptr {
-		return errors.New("outputPtr 必须是一个指针")
+		return errors.New("dstPtr 必须是一个指针")
 	}
 
 	// 判断来源和目的数据类型是否可转换
