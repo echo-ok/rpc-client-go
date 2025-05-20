@@ -83,9 +83,11 @@ func TestTemuSemiOrder(t *testing.T) {
 		}
 
 		var value struct {
+			PaginationResult
 			Items []entity.ParentOrder `json:"items"`
 		}
 		err = result.ConvertDataTo(&value)
 		assert.NoError(t, err)
+		assert.Equal(t, value.TotalCount, len(value.Items))
 	}
 }
