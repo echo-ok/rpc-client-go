@@ -18,22 +18,27 @@ type Result struct {
 	Data      any         `json:"data"`
 }
 
-// ConvertDataTo 将 Data 数据提取到结构体
-func (r Result) ConvertDataTo(outputPtr any) error {
-	if outputPtr == nil || r.Data == nil {
+// ConvertDataTo 将 Data 数据提取到合适的数据结构体中
+func (r Result) ConvertDataTo(dstPtr any) error {
+	if dstPtr == nil || r.Data == nil {
 		return nil
 	}
 
 	// 检查 outputPtr 是否为指针
-	outputPtrType := reflect.ValueOf(outputPtr)
-	if outputPtrType.Kind() != reflect.Ptr {
+	outputVal := reflect.ValueOf(dstPtr)
+	if outputVal.Kind() != reflect.Ptr {
 		return errors.New("outputPtr 必须是一个指针")
 	}
 
-	sourceDataKind := reflect.TypeOf(r.Data).Kind()
-	destinationDataKind := outputPtrType.Elem().Kind()
-	if sourceDataKind != destinationDataKind {
-		return fmt.Errorf("错误的类型：%s to %s", sourceDataKind.String(), destinationDataKind.String())
+	// 判断来源和目的数据类型是否可转换
+	// map => struct|map
+	// []map => []struct
+	// 只在类型完全不兼容时才会报错
+	srcKind := reflect.TypeOf(r.Data).Kind()
+	dstKind := outputVal.Elem().Kind()
+	if (srcKind == reflect.Map && dstKind != reflect.Struct && dstKind != reflect.Map) ||
+		(srcKind == reflect.Slice && dstKind != reflect.Slice) {
+		return fmt.Errorf("结果值不能转换为 %s", dstKind)
 	}
 
 	b, err := json.Marshal(r.Data)
@@ -41,10 +46,10 @@ func (r Result) ConvertDataTo(outputPtr any) error {
 		return err
 	}
 
-	return json.Unmarshal(b, outputPtr)
+	return json.Unmarshal(b, dstPtr)
 }
 
-type ResultPagerData struct {
+type PaginationResult struct {
 	Page       int  `json:"page"`
 	PageSize   int  `json:"page_size"`
 	TotalCount int  `json:"total_count"`
