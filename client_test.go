@@ -2,7 +2,6 @@ package client
 
 import (
 	"github.com/goccy/go-json"
-	"github.com/hiscaler/temu-go/entity"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -56,12 +55,13 @@ func TestTemuSemiOrderCustomizationInformation(t *testing.T) {
 		payload.SetBody([]string{"211-12297657592950317"}),
 	}, &reply)
 	assert.NoError(t, err)
+	assert.Equal(t, len(reply.Results), 1)
 	for _, result := range reply.Results {
 		if !result.Ok {
 			continue
 		}
 
-		var infos []entity.SemiOrderCustomizationInformation
+		var infos []any
 		err = result.ConvertDataTo(&infos)
 		assert.NoError(t, err)
 	}
@@ -77,6 +77,7 @@ func TestTemuSemiOrder(t *testing.T) {
 			}),
 	}, &reply)
 	assert.NoError(t, err)
+	assert.Equal(t, len(reply.Results), 1)
 	for _, result := range reply.Results {
 		if !result.Ok {
 			continue
@@ -84,7 +85,7 @@ func TestTemuSemiOrder(t *testing.T) {
 
 		var value struct {
 			PaginationResult
-			Items []entity.ParentOrder `json:"items"`
+			Items []any `json:"items"`
 		}
 		err = result.ConvertDataTo(&value)
 		assert.NoError(t, err)
