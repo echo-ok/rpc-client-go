@@ -1,9 +1,7 @@
 package client
 
 import (
-	"errors"
 	"fmt"
-	"github.com/samber/lo"
 )
 
 type Reply struct {
@@ -17,32 +15,32 @@ func (r *Reply) Reset() *Reply {
 	return r
 }
 
-func (r *Reply) Error() error {
-	var err error
+func (r *Reply) Errors() []error {
+	errs := make([]error, 0, len(r.Results))
 	for _, result := range r.Results {
 		if result.Ok || !result.Error.Valid {
 			continue
 		}
 
-		s := result.Label.ValueOrZero()
-		if s == "" {
-			s = result.StoreName
+		label := result.Label.ValueOrZero()
+		if label == "" {
+			label = result.StoreName
 		}
-		err = errors.Join(err, fmt.Errorf("%s: %s", s, result.Error.String))
+		errs = append(errs, fmt.Errorf("%s: %s", label, result.Error.String))
 	}
 
-	return err
+	return errs
 }
 
-func (r *Reply) ErrorStrings() []string {
-	errs := make([]string, 0, len(r.Results))
-	for _, result := range r.Results {
-		if result.Ok || !result.Error.Valid {
-			continue
-		}
-
-		errs = append(errs, fmt.Sprintf("%s: %s", result.StoreName, result.Error.String))
+func (r *Reply) ErrorSummary() []string {
+	if len(r.Errors()) == 0 {
+		return []string{}
 	}
 
-	return lo.Uniq(errs)
+	messages := make([]string, len(r.Results))
+	for i, e := range r.Errors() {
+		messages[i] = e.Error()
+	}
+
+	return messages
 }
