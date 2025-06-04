@@ -6,7 +6,7 @@ require (
 	github.com/goccy/go-json v0.10.5
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/roadrunner-server/goridge/v3 v3.8.3
-	github.com/spf13/cast v1.8.0
+	github.com/spf13/cast v1.9.2
 	github.com/stretchr/testify v1.10.0
 	gopkg.in/guregu/null.v4 v4.0.0
 )
