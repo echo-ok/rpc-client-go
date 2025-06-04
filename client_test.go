@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	payload   Payload
+	payload   *Payload
 	rpcClient *RpcClient
 	reply     Reply
 )
@@ -33,12 +33,18 @@ func init() {
 		panic(err)
 	}
 
-	payload = NewPayload("-1", "Temu SEMI Store", Configuration{
-		"region":             cfg.Region,
-		"app_key":            cfg.AppKey,
-		"app_secret":         cfg.AppSecret,
-		"access_token":       cfg.AccessToken,
-		"static_file_server": cfg.StaticFileServer,
+	payload = NewPayload(Store{
+		ID:    "-1",
+		Name:  "Temu SEMI Store",
+		Env:   "prod",
+		Debug: true,
+		Configuration: Configuration{
+			"region":             cfg.Region,
+			"app_key":            cfg.AppKey,
+			"app_secret":         cfg.AppSecret,
+			"access_token":       cfg.AccessToken,
+			"static_file_server": cfg.StaticFileServer,
+		},
 	})
 	rpcClient, err = NewRpcClient(cfg.RpcAddress, &Option{
 		Network: "tcp",
@@ -50,8 +56,7 @@ func init() {
 }
 
 func TestTemuSemiOrderCustomizationInformation(t *testing.T) {
-	reply.Reset()
-	err := rpcClient.Call("Temu.Semi.Order.CustomizationInformation", []Payload{
+	err := rpcClient.Call("Temu.Semi.Order.CustomizationInformation", Args{
 		payload.SetBody([]string{"211-12297657592950317"}),
 	}, &reply)
 	assert.NoError(t, err)
@@ -68,13 +73,11 @@ func TestTemuSemiOrderCustomizationInformation(t *testing.T) {
 }
 
 func TestTemuSemiOrder(t *testing.T) {
-	reply.Reset()
-	err := rpcClient.Call("Temu.Semi.Order.Query", []Payload{
-		payload.
-			SetBody(map[string]any{
-				"parentOrderSnList": []string{"PO-211-19255520399990061"},
-				"regionId":          211,
-			}),
+	err := rpcClient.Call("Temu.Semi.Order.Query", Args{
+		payload.SetBody(map[string]any{
+			"parentOrderSnList": []string{"PO-211-19255520399990061"},
+			"regionId":          211,
+		}),
 	}, &reply)
 	assert.NoError(t, err)
 	assert.Equal(t, len(reply.Results), 1)

@@ -9,6 +9,8 @@ import (
 	"net/rpc/jsonrpc"
 )
 
+type Args []*Payload
+
 type RpcClient struct {
 	net.Conn
 	*rpc.Client
@@ -47,6 +49,13 @@ func NewRpcClient(addr string, opt *Option) (*RpcClient, error) {
 		Conn:   conn,
 		Client: rpc.NewClientWithCodec(clientCodec),
 	}, nil
+}
+
+// Call calls the RPC server with the given service method and arguments.
+// It returns an error if the call fails.
+func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
+	reply.Reset()
+	return c.Client.Call(serviceMethod, args, reply)
 }
 
 // Close closes both the network connection and the RPC client.

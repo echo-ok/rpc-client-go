@@ -16,14 +16,20 @@ func (r *Reply) Reset() *Reply {
 }
 
 func (r *Reply) Errors() []error {
+	if len(r.Results) == 0 {
+		return nil
+	}
+
 	errs := make([]error, 0, len(r.Results))
 	for _, result := range r.Results {
 		if result.Ok || !result.Error.Valid {
 			continue
 		}
 
-		label := result.Label.ValueOrZero()
-		if label == "" {
+		var label string
+		if result.Label.Valid {
+			label = result.Label.String
+		} else {
 			label = result.StoreName
 		}
 		errs = append(errs, fmt.Errorf("%s: %s", label, result.Error.String))
@@ -34,7 +40,7 @@ func (r *Reply) Errors() []error {
 
 func (r *Reply) ErrorSummary() []string {
 	if len(r.Errors()) == 0 {
-		return []string{}
+		return nil
 	}
 
 	messages := make([]string, len(r.Results))

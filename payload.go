@@ -5,25 +5,13 @@ type Payload struct {
 	Body  any   `json:"body"`
 }
 
-func NewPayload(shopId, shopName string, cfg Configuration) Payload {
-	return Payload{
-		Store: Store{
-			ID:    shopId,
-			Name:  shopName,
-			Env:   "prod",
-			Debug: true,
-			Configuration: map[string]any{
-				"region":             cfg.GetString("region"),
-				"app_key":            cfg.GetString("app_key"),
-				"app_secret":         cfg.GetString("app_secret"),
-				"access_token":       cfg.GetString("access_token"),
-				"static_file_server": cfg.GetString("static_file_server"),
-			},
-		},
+func NewPayload(store Store) *Payload {
+	return &Payload{
+		Store: store,
 	}
 }
 
-func (p Payload) SetBody(body ...any) Payload {
+func (p *Payload) SetBody(body ...any) *Payload {
 	if len(body) == 0 {
 		p.Body = nil
 	} else if len(body) == 1 {
