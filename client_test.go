@@ -46,7 +46,7 @@ func init() {
 			"static_file_server": cfg.StaticFileServer,
 		},
 	})
-	rpcClient, err = NewRpcClient(cfg.RpcAddress, &Option{
+	rpcClient, err = NewClient(cfg.RpcAddress, &Option{
 		Network: "tcp",
 		Codec:   jsonCodec,
 	})

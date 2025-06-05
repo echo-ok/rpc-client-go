@@ -17,7 +17,7 @@ type RpcClient struct {
 	Error error
 }
 
-// NewRpcClient creates a new RPC client to the given address.
+// NewClient creates a new RPC client to the given address.
 //
 // The address should be given in the format "host:port".
 //
@@ -29,7 +29,7 @@ type RpcClient struct {
 // the RpcClient is set to the error returned by the underlying Close methods.
 //
 // The supported codecs are "goridge" and "json". The default codec is "json".
-func NewRpcClient(addr string, opt *Option) (*RpcClient, error) {
+func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	if opt == nil {
 		opt = &defaultOption
 	}
