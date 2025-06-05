@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/goccy/go-json"
 	"github.com/stretchr/testify/assert"
+	"log/slog"
 	"os"
 	"testing"
 )
@@ -22,7 +23,8 @@ type config struct {
 	StaticFileServer string `json:"static_file_server"`
 }
 
-func init() {
+func TestMain(m *testing.M) {
+
 	var cfg *config
 	b, err := os.ReadFile("config.json")
 	if err != nil {
@@ -47,12 +49,16 @@ func init() {
 		},
 	})
 	rpcClient, err = NewClient(cfg.RpcAddress, &Option{
-		Network: "tcp",
-		Codec:   jsonCodec,
+		Network:  "tcp",
+		Codec:    jsonCodec,
+		logLevel: slog.LevelDebug,
 	})
+
 	if err != nil {
 		panic(err)
 	}
+	defer rpcClient.Close()
+	m.Run()
 }
 
 func TestTemuSemiOrderCustomizationInformation(t *testing.T) {

@@ -4,17 +4,19 @@ import (
 	"errors"
 	rrse "github.com/roadrunner-server/errors"
 	goridgeRpc "github.com/roadrunner-server/goridge/v3/pkg/rpc"
+	"log/slog"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
+	"os"
 )
 
 type Args []*Payload
 
 type RpcClient struct {
-	net.Conn
 	*rpc.Client
-	Error error
+	Error  error
+	logger *slog.Logger
 }
 
 // NewClient creates a new RPC client to the given address.
@@ -46,16 +48,24 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	}
 
 	return &RpcClient{
-		Conn:   conn,
 		Client: rpc.NewClientWithCodec(clientCodec),
+		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: opt.logLevel,
+		})),
 	}, nil
 }
 
 // Call calls the RPC server with the given service method and arguments.
 // It returns an error if the call fails.
 func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
+	c.Error = nil
 	reply.Reset()
-	return c.Client.Call(serviceMethod, args, reply)
+	err := c.Client.Call(serviceMethod, args, reply)
+	if err != nil {
+		c.Error = errors.Join(c.Error, rrse.E(rrse.Op("call"), err))
+	}
+	c.logger.WithGroup("rpc").Info("call", "serviceMethod", serviceMethod, "args", *&args, "reply", reply, "error", c.Error)
+	return err
 }
 
 // Close closes both the network connection and the RPC client.
@@ -63,14 +73,10 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 // or the client to the Error field. If the connection or client is nil,
 // it skips the closing operation for that component.
 func (c *RpcClient) Close() {
-	if c.Conn != nil {
-		if err := c.Conn.Close(); err != nil {
-			c.Error = errors.Join(c.Error, rrse.E(rrse.Op("close"), err))
-		}
-	}
 	if c.Client != nil {
 		if err := c.Client.Close(); err != nil {
-			c.Error = errors.Join(c.Error, rrse.E(rrse.Op("close"), err))
+			c.Error = errors.Join(c.Error, rrse.E(rrse.Op("client"), err))
+			c.logger.WithGroup("rpc").Error("close", "error", c.Error)
 		}
 	}
 }
