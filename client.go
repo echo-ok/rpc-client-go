@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	rrse "github.com/roadrunner-server/errors"
 	goridgeRpc "github.com/roadrunner-server/goridge/v3/pkg/rpc"
 	"log/slog"
@@ -15,7 +14,6 @@ type Args []*Payload
 
 type RpcClient struct {
 	*rpc.Client
-	Error  error
 	logger *slog.Logger
 }
 
@@ -35,8 +33,12 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	if opt == nil {
 		opt = &defaultOption
 	}
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: opt.logLevel,
+	}))
 	conn, err := net.Dial(opt.Network, addr)
 	if err != nil {
+		logger.Error(err.Error())
 		return &RpcClient{}, rrse.E(rrse.Op("dial"), err)
 	}
 
@@ -49,22 +51,19 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 
 	return &RpcClient{
 		Client: rpc.NewClientWithCodec(clientCodec),
-		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: opt.logLevel,
-		})),
+		logger: logger,
 	}, nil
 }
 
 // Call calls the RPC server with the given service method and arguments.
 // It returns an error if the call fails.
 func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
-	c.Error = nil
 	reply.Reset()
 	err := c.Client.Call(serviceMethod, args, reply)
 	if err != nil {
-		c.Error = errors.Join(c.Error, rrse.E(rrse.Op("call"), err))
+		err = rrse.E(rrse.Op("call"), err)
 	}
-	c.logger.WithGroup("rpc").Info("call", "serviceMethod", serviceMethod, "args", *&args, "reply", reply, "error", c.Error)
+	c.logger.WithGroup("rpc").Info("call", "serviceMethod", serviceMethod, "args", *&args, "reply", reply, "error", err)
 	return err
 }
 
@@ -72,11 +71,13 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 // It appends any errors encountered during the closing of the connection
 // or the client to the Error field. If the connection or client is nil,
 // it skips the closing operation for that component.
-func (c *RpcClient) Close() {
+func (c *RpcClient) Close() error {
 	if c.Client != nil {
 		if err := c.Client.Close(); err != nil {
-			c.Error = errors.Join(c.Error, rrse.E(rrse.Op("client"), err))
-			c.logger.WithGroup("rpc").Error("close", "error", c.Error)
+			err = rrse.E(rrse.Op("close"), err)
+			c.logger.WithGroup("rpc").Error("close", "error", err)
+			return err
 		}
 	}
+	return nil
 }

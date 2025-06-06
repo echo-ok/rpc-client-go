@@ -24,7 +24,6 @@ type config struct {
 }
 
 func TestMain(m *testing.M) {
-
 	var cfg *config
 	b, err := os.ReadFile("config.json")
 	if err != nil {
@@ -53,11 +52,12 @@ func TestMain(m *testing.M) {
 		Codec:    jsonCodec,
 		logLevel: slog.LevelDebug,
 	})
-
 	if err != nil {
 		panic(err)
 	}
-	defer rpcClient.Close()
+	defer func(rpcClient *RpcClient) {
+		_ = rpcClient.Close()
+	}(rpcClient)
 	m.Run()
 }
 
