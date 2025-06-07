@@ -12,11 +12,12 @@ func NewPayload(store Store) *Payload {
 }
 
 func (p *Payload) SetBody(body ...any) *Payload {
-	if len(body) == 0 {
+	switch len(body) {
+	case 0:
 		p.Body = nil
-	} else if len(body) == 1 {
+	case 1:
 		p.Body = body[0]
-	} else {
+	default:
 		p.Body = body
 	}
 
