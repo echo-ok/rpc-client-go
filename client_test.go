@@ -1,4 +1,4 @@
-package client
+package rpclient
 
 import (
 	"github.com/goccy/go-json"

@@ -1,4 +1,4 @@
-package client
+package rpclient
 
 import (
 	"github.com/spf13/cast"

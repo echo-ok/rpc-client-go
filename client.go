@@ -1,4 +1,4 @@
-package client
+package rpclient
 
 import (
 	rrse "github.com/roadrunner-server/errors"

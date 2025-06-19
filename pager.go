@@ -1,4 +1,4 @@
-package client
+package rpclient
 
 // Pager 带翻页的数据
 type Pager struct {

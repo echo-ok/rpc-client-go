@@ -1,4 +1,4 @@
-package client
+package rpclient
 
 type Payload struct {
 	Store Store `json:"store"`
