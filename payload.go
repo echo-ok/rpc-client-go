@@ -1,11 +1,18 @@
 package rpclient
 
+import (
+	"slices"
+)
+
 type Payload struct {
 	Store Store `json:"store"`
 	Body  any   `json:"body"`
 }
 
 func NewPayload(store Store) *Payload {
+	if slices.Index([]string{Dev, Test, Prod}, store.Env) == -1 {
+		store.Env = Dev
+	}
 	return &Payload{
 		Store: store,
 	}

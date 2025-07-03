@@ -10,6 +10,12 @@ import (
 	"os"
 )
 
+const (
+	Dev  = "dev"  // 开发环境
+	Test = "test" // 测试环境
+	Prod = "prod" // 生产环境
+)
+
 type Args []*Payload
 
 type RpcClient struct {
