@@ -15,6 +15,17 @@ func (r *Reply) Reset() *Reply {
 	return r
 }
 
+// HasError 回应数据中是否存在错误
+func (r *Reply) HasError() bool {
+	for _, result := range r.Results {
+		if !result.Ok {
+			return true
+		}
+	}
+	return false
+}
+
+// Errors 错误集合
 func (r *Reply) Errors() []error {
 	if len(r.Results) == 0 {
 		return nil
@@ -38,6 +49,7 @@ func (r *Reply) Errors() []error {
 	return errs
 }
 
+// ErrorSummary 错误摘要
 func (r *Reply) ErrorSummary() []string {
 	if len(r.Errors()) == 0 {
 		return nil
