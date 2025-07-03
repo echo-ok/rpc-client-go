@@ -9,13 +9,15 @@ type Payload struct {
 	Body  any   `json:"body"`
 }
 
-func NewPayload(store Store) *Payload {
+func NewPayload(store Store, body ...any) *Payload {
 	if slices.Index([]string{Dev, Test, Prod}, store.Env) == -1 {
 		store.Env = Dev
 	}
-	return &Payload{
+	p := &Payload{
 		Store: store,
 	}
+	p.SetBody(body)
+	return p
 }
 
 func (p *Payload) SetBody(body ...any) *Payload {
@@ -27,6 +29,5 @@ func (p *Payload) SetBody(body ...any) *Payload {
 	default:
 		p.Body = body
 	}
-
 	return p
 }
