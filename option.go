@@ -12,11 +12,11 @@ const (
 type Option struct {
 	Network  string
 	Codec    string
-	logLevel slog.Leveler
+	LogLevel slog.Leveler
 }
 
 var defaultOption = Option{
 	Network:  "tcp",
 	Codec:    jsonCodec,
-	logLevel: slog.LevelDebug,
+	LogLevel: slog.LevelDebug,
 }

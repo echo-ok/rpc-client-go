@@ -41,7 +41,7 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 		opt = &defaultOption
 	}
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: opt.logLevel,
+		Level: opt.LogLevel,
 	}))
 	conn, err := net.Dial(opt.Network, addr)
 	if err != nil {
