@@ -1,9 +1,10 @@
 package rpclient
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 // 测试用例：TC01 - outputPtr 不是指针

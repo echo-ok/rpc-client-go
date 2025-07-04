@@ -1,11 +1,12 @@
 package rpclient
 
 import (
-	"github.com/goccy/go-json"
-	"github.com/stretchr/testify/assert"
 	"log/slog"
 	"os"
 	"testing"
+
+	"github.com/goccy/go-json"
+	"github.com/stretchr/testify/assert"
 )
 
 var (

@@ -1,8 +1,9 @@
 package rpclient
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfiguration_read(t *testing.T) {

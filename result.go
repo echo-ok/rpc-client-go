@@ -3,9 +3,10 @@ package rpclient
 import (
 	"errors"
 	"fmt"
+	"reflect"
+
 	"github.com/goccy/go-json"
 	"gopkg.in/guregu/null.v4"
-	"reflect"
 )
 
 type Result struct {

@@ -1,13 +1,14 @@
 package rpclient
 
 import (
-	rrse "github.com/roadrunner-server/errors"
-	goridgeRpc "github.com/roadrunner-server/goridge/v3/pkg/rpc"
 	"log/slog"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
 	"os"
+
+	rrse "github.com/roadrunner-server/errors"
+	goridgeRpc "github.com/roadrunner-server/goridge/v3/pkg/rpc"
 )
 
 const (
