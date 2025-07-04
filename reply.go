@@ -2,6 +2,8 @@ package rpclient
 
 import (
 	"fmt"
+
+	"gopkg.in/guregu/null.v4"
 )
 
 type Reply struct {
@@ -33,10 +35,13 @@ func (r *Reply) Errors() []error {
 
 	errs := make([]error, 0, len(r.Results))
 	for _, result := range r.Results {
-		if result.Ok || !result.Error.Valid {
+		if result.Ok {
 			continue
 		}
 
+		if !result.Error.Valid {
+			result.Error = null.StringFrom("rc: Unknown error")
+		}
 		var label string
 		if result.Label.Valid {
 			label = result.Label.String
