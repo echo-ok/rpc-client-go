@@ -12,7 +12,7 @@ func NewArgs() Args {
 }
 
 // isEmpty 判断变量是否为空
-// nil, "", []T{}, [...]T{}, map[T]V 均为空
+// nil, "", []T{}, [...]T{}, map[T]V{} 均为空
 func isEmpty(v any) bool {
 	if v == nil {
 		return true
