@@ -38,12 +38,12 @@ func main() {
         _ = rpcClient.Close()
     }()
     // `reply` must be a pointer!!! 
-    err := rpcClient.Call("Temu.Semi.Order.Query", Args{
+    err := rpcClient.Call("Temu.Semi.Order.Query", NewArgs().Add(
         payload.SetBody(map[string]any{
             "parentOrderSnList": []string{"PO-211-19255520399990061"}, 
             "regionId":          211,
         }),
-    }, &reply)
+    ), &reply)
     if err != nil {
         log.Fatal(err)
     }
