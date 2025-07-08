@@ -2,7 +2,6 @@ package rpclient
 
 import (
 	"reflect"
-	"strings"
 )
 
 type Args []*Payload
@@ -44,7 +43,7 @@ func (a Args) Add(payload *Payload) Args {
 func (a Args) Del(storeId string) Args {
 	aa := Args{}
 	for _, v := range a {
-		if strings.EqualFold(v.Store.ID, storeId) {
+		if v.Store.ID == storeId {
 			continue
 		}
 		aa = append(aa, v)
