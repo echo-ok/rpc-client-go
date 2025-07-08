@@ -17,8 +17,6 @@ const (
 	Prod = "prod" // 生产环境
 )
 
-type Args []*Payload
-
 type RpcClient struct {
 	*rpc.Client
 	logger *slog.Logger

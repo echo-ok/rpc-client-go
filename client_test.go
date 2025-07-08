@@ -63,9 +63,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestTemuSemiOrderCustomizationInformation(t *testing.T) {
-	err := rpcClient.Call("Temu.Semi.Order.CustomizationInformation", Args{
-		payload.SetBody([]string{"211-12297657592950317"}),
-	}, &reply)
+	err := rpcClient.Call("Temu.Semi.Order.CustomizationInformation", NewArgs().Add(payload.SetBody([]string{"211-12297657592950317"})), &reply)
 	assert.NoError(t, err)
 	assert.Equal(t, len(reply.Results), 1)
 	for _, result := range reply.Results {
@@ -80,12 +78,10 @@ func TestTemuSemiOrderCustomizationInformation(t *testing.T) {
 }
 
 func TestTemuSemiOrder(t *testing.T) {
-	err := rpcClient.Call("Temu.Semi.Order.Query", Args{
-		payload.SetBody(map[string]any{
-			"parentOrderSnList": []string{"PO-211-19255520399990061"},
-			"regionId":          211,
-		}),
-	}, &reply)
+	err := rpcClient.Call("Temu.Semi.Order.Query", NewArgs().Add(payload.SetBody(map[string]any{
+		"parentOrderSnList": []string{"PO-211-19255520399990061"},
+		"regionId":          211,
+	})), &reply)
 	assert.NoError(t, err)
 	assert.Equal(t, len(reply.Results), 1)
 	for _, result := range reply.Results {
