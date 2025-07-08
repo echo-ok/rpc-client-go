@@ -23,7 +23,7 @@ func NewPayload(store Store, body ...any) *Payload {
 func (p *Payload) SetBody(body ...any) *Payload {
 	switch len(body) {
 	case 0:
-		p.Body = nil
+		return p
 	case 1:
 		p.Body = body[0]
 	default:
