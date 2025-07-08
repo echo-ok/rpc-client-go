@@ -37,4 +37,10 @@ func TestArgs_Add(t *testing.T) {
 
 	args = NewArgs().Add(NewPayload(store)).Add(NewPayload(store2).SetBody(""))
 	assert.Equal(t, 1, len(args))
+
+	args = NewArgs().
+		Add(NewPayload(store)).
+		Add(NewPayload(store2).SetBody("xxxx")).
+		Del("-1")
+	assert.Equal(t, 0, len(args))
 }

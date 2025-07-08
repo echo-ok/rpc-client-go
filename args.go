@@ -1,6 +1,9 @@
 package rpclient
 
-import "reflect"
+import (
+	"reflect"
+	"strings"
+)
 
 type Args []*Payload
 
@@ -36,4 +39,15 @@ func (a Args) Add(payload *Payload) Args {
 		}
 	}
 	return append(a, payload)
+}
+
+func (a Args) Del(storeId string) Args {
+	aa := Args{}
+	for _, v := range a {
+		if strings.EqualFold(v.Store.ID, storeId) {
+			continue
+		}
+		aa = append(aa, v)
+	}
+	return aa
 }
