@@ -19,7 +19,7 @@ type Result struct {
 	Data      any         `json:"data"`
 }
 
-// ConvertDataTo 将 Data 数据提取到合适的数据结构体中
+// ConvertDataTo 将 Data 数据提取到指定的结构体中
 func (r Result) ConvertDataTo(dstPtr any) error {
 	if dstPtr == nil || r.Data == nil {
 		return nil
