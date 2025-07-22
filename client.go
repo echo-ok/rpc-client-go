@@ -77,12 +77,14 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 // or the client to the Error field. If the connection or client is nil,
 // it skips the closing operation for that component.
 func (c *RpcClient) Close() error {
-	if c.Client != nil {
-		if err := c.Client.Close(); err != nil {
-			err = rrse.E(rrse.Op("close"), err)
-			c.logger.WithGroup("rpc").Error("close", "error", err)
-			return err
-		}
+	if c.Client == nil {
+		return nil
+	}
+
+	if err := c.Client.Close(); err != nil {
+		err = rrse.E(rrse.Op("close"), err)
+		c.logger.WithGroup("rpc").Error("close", "error", err)
+		return err
 	}
 	return nil
 }
