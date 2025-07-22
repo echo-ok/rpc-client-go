@@ -2,6 +2,7 @@ package rpclient
 
 import (
 	"reflect"
+	"strings"
 )
 
 type Args []*Payload
@@ -17,12 +18,18 @@ func isEmpty(v any) bool {
 		return true
 	}
 
-	val := reflect.ValueOf(v)
-	switch val.Kind() {
+	vo := reflect.ValueOf(v)
+	switch vo.Kind() {
 	case reflect.Slice, reflect.Map, reflect.Array:
-		return val.Len() == 0
+		return vo.Len() == 0
+	case reflect.Ptr:
+		val := vo.Elem()
+		if val.Kind() == reflect.Array {
+			return val.Len() == 0
+		}
+		return false
 	case reflect.String:
-		return val.Len() == 0 || val.String() == ""
+		return vo.Len() == 0 || strings.TrimSpace(vo.String()) == ""
 	default:
 		return false
 	}
