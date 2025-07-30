@@ -13,10 +13,12 @@ type Option struct {
 	Network  string
 	Codec    string
 	LogLevel slog.Leveler
+	Debug    bool
 }
 
 var defaultOption = Option{
 	Network:  "tcp",
 	Codec:    jsonCodec,
 	LogLevel: slog.LevelDebug,
+	Debug:    true,
 }
