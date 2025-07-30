@@ -26,9 +26,9 @@ func (r Result) ConvertDataTo(dstPtr any) error {
 	}
 
 	// 检查 dstPtr 是否为指针
-	outputVal := reflect.ValueOf(dstPtr)
-	if outputVal.Kind() != reflect.Ptr {
-		return errors.New("dstPtr 必须是一个指针")
+	dstVo := reflect.ValueOf(dstPtr)
+	if dstVo.Kind() != reflect.Ptr {
+		return errors.New("rpclient: 'dstPtr' param type must be a pointer")
 	}
 
 	// 判断来源和目的数据类型是否可转换
@@ -36,10 +36,10 @@ func (r Result) ConvertDataTo(dstPtr any) error {
 	// []map => []struct
 	// 只在类型完全不兼容时才会报错
 	srcKind := reflect.TypeOf(r.Data).Kind()
-	dstKind := outputVal.Elem().Kind()
+	dstKind := dstVo.Elem().Kind()
 	if (srcKind == reflect.Map && dstKind != reflect.Struct && dstKind != reflect.Map) ||
 		(srcKind == reflect.Slice && dstKind != reflect.Slice) {
-		return fmt.Errorf("结果值不能转换为 %s", dstKind)
+		return fmt.Errorf("rpclient: %s cannot be converted to %s", srcKind, dstKind)
 	}
 
 	b, err := json.Marshal(r.Data)

@@ -40,7 +40,7 @@ func (r *Reply) Errors() []error {
 		}
 
 		if !result.Error.Valid {
-			result.Error = null.StringFrom("rc: Unknown error")
+			result.Error = null.StringFrom("rpclient: Unknown error")
 		}
 		var label string
 		if result.Label.Valid {
