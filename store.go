@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Configuration 配置信息
 type Configuration map[string]any
 
 func (c Configuration) read(key string) any {
