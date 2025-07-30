@@ -61,6 +61,9 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	} else {
 		clientCodec = jsonrpc.NewClientCodec(conn)
 	}
+	if debug {
+		logger.Info("Conn", "dsn", dsn, "codec", opt.Codec, "error", nil)
+	}
 	return &RpcClient{
 		Client: rpc.NewClientWithCodec(clientCodec),
 		logger: logger,
