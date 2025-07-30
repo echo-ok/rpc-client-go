@@ -2,6 +2,7 @@ package rpclient
 
 import (
 	"slices"
+	"strings"
 )
 
 type Payload struct {
@@ -10,7 +11,8 @@ type Payload struct {
 }
 
 func NewPayload(store Store, body ...any) *Payload {
-	if slices.Index([]string{Dev, Test, Prod}, store.Env) == -1 {
+	store.Env = strings.ToLower(store.Env)
+	if store.Env == "" || slices.Index([]string{Dev, Test, Prod}, store.Env) == -1 {
 		store.Env = Dev
 	}
 	p := &Payload{
