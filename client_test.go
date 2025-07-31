@@ -1,7 +1,6 @@
 package rpclient
 
 import (
-	"log/slog"
 	"os"
 	"testing"
 
@@ -51,7 +50,7 @@ func TestMain(m *testing.M) {
 	rpcClient, err = NewClient(cfg.RpcAddress, &Option{
 		Network:  "tcp",
 		Codec:    JsonCodec,
-		LogLevel: slog.LevelDebug,
+		LogLevel: "debug",
 	})
 	if err != nil {
 		panic(err)
