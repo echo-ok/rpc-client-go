@@ -39,9 +39,17 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	if opt == nil {
 		opt = &defaultOption
 	}
-
+	logLevel := slog.LevelDebug
+	switch opt.LogLevel {
+	case "info":
+		logLevel = slog.LevelInfo
+	case "warn":
+		logLevel = slog.LevelWarn
+	case "error":
+		logLevel = slog.LevelError
+	}
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: opt.LogLevel,
+		Level: logLevel,
 	})).
 		WithGroup("rpclient").
 		With("dsn", fmt.Sprintf("%s://%s", opt.Network, addr))
