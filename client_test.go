@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 	})
 	rpcClient, err = NewClient(cfg.RpcAddress, &Option{
 		Network:  "tcp",
-		Codec:    jsonCodec,
+		Codec:    JsonCodec,
 		LogLevel: slog.LevelDebug,
 	})
 	if err != nil {

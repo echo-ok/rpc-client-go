@@ -61,7 +61,7 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 
 	logger.Debug("Dial", "error", nil)
 	var clientCodec rpc.ClientCodec
-	if opt.Codec == goridgeCodec {
+	if opt.Codec == GoridgeCodec {
 		clientCodec = goridgeRpc.NewClientCodec(conn)
 	} else {
 		clientCodec = jsonrpc.NewClientCodec(conn)
