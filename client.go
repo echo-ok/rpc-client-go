@@ -20,9 +20,7 @@ const (
 
 type RpcClient struct {
 	*rpc.Client
-	debug  bool
 	logger *slog.Logger
-	dsn    string
 }
 
 // NewClient creates a new RPC client to the given address.
@@ -41,34 +39,29 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	if opt == nil {
 		opt = &defaultOption
 	}
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: opt.LogLevel,
-	})).WithGroup("rpclient")
-	dsn := fmt.Sprintf("%s://%s", opt.Network, addr)
+	})).
+		WithGroup("rpclient").
+		With("dsn", fmt.Sprintf("%s://%s", opt.Network, addr))
 	conn, err := net.Dial(opt.Network, addr)
 	if err != nil {
-		logger.Error("Dial", "dsn", dsn, "error", err)
+		logger.Error("Dial", "error", err)
 		return nil, rrse.E(rrse.Op("dial"), err)
 	}
 
-	debug := opt.Debug
-	if debug {
-		logger.Info("Dial", "dsn", dsn, "error", nil)
-	}
+	logger.Debug("Dial", "error", nil)
 	var clientCodec rpc.ClientCodec
 	if opt.Codec == goridgeCodec {
 		clientCodec = goridgeRpc.NewClientCodec(conn)
 	} else {
 		clientCodec = jsonrpc.NewClientCodec(conn)
 	}
-	if debug {
-		logger.Info("Conn", "dsn", dsn, "codec", opt.Codec, "error", nil)
-	}
+	logger.Debug("Conn", "codec", opt.Codec, "error", nil)
 	return &RpcClient{
 		Client: rpc.NewClientWithCodec(clientCodec),
 		logger: logger,
-		debug:  debug,
-		dsn:    dsn,
 	}, nil
 }
 
@@ -80,10 +73,10 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 	if err != nil {
 		err = rrse.E(rrse.Op("call"), err)
 	}
-	loggerArgs := []any{"dsn", c.dsn, "serviceMethod", serviceMethod, "args", *&args, "reply", reply, "error", err}
+	loggerArgs := []any{"serviceMethod", serviceMethod, "args", *&args, "reply", reply, "error", err}
 	if err != nil {
 		c.logger.Error("Call", loggerArgs...)
-	} else if c.debug {
+	} else {
 		c.logger.Info("Call", loggerArgs...)
 	}
 	return err
@@ -100,11 +93,9 @@ func (c *RpcClient) Close() error {
 
 	if err := c.Client.Close(); err != nil {
 		err = rrse.E(rrse.Op("close"), err)
-		c.logger.Error("Close", "dsn", c.dsn, "error", err)
+		c.logger.Error("Close", "error", err)
 		return err
 	}
-	if c.debug {
-		c.logger.Info("Close", "dsn", c.dsn, "error", nil)
-	}
+	c.logger.Debug("Close", "error", nil)
 	return nil
 }

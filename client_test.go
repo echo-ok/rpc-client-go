@@ -52,7 +52,6 @@ func TestMain(m *testing.M) {
 		Network:  "tcp",
 		Codec:    jsonCodec,
 		LogLevel: slog.LevelDebug,
-		Debug:    true,
 	})
 	if err != nil {
 		panic(err)
