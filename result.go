@@ -20,6 +20,7 @@ type Result struct {
 }
 
 // ConvertDataTo 将 Data 数据提取到指定的结构体中
+// 因为使用的是 json.Unmarshal 所以请确保 `json` 标签的正确性，否则可能会导致数据丢失
 func (r Result) ConvertDataTo(dstPtr any) error {
 	if dstPtr == nil || r.Data == nil {
 		return nil
