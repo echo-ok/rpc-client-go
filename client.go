@@ -7,6 +7,8 @@ import (
 	"net/rpc"
 	"net/rpc/jsonrpc"
 	"os"
+	"slices"
+	"strings"
 
 	rrse "github.com/roadrunner-server/errors"
 	goridgeRpc "github.com/roadrunner-server/goridge/v3/pkg/rpc"
@@ -21,6 +23,24 @@ const (
 type RpcClient struct {
 	*rpc.Client
 	logger *slog.Logger
+	option *Option
+}
+
+func maskString(s string) string {
+	n := len(s)
+	switch len(s) {
+	case 0:
+		return s
+	case 1, 2:
+		// 长度小于等于 2，直接返回相同长度的 *
+		return strings.Repeat("*", n)
+	case 3, 4, 5, 6:
+		// 保留首尾字符，中间用 * 填充
+		return s[:1] + strings.Repeat("*", n-2) + s[n-1:]
+	default:
+		// 长度大于 6 时，保留前 3 位和后 3 位，中间替换为 ******
+		return s[:3] + "******" + s[n-3:]
+	}
 }
 
 // NewClient creates a new RPC client to the given address.
@@ -48,9 +68,11 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	case "error":
 		logLevel = slog.LevelError
 	}
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: logLevel,
-	})).
+	logger := slog.
+		New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			AddSource: false,
+			Level:     logLevel,
+		})).
 		WithGroup("rpclient").
 		With("dsn", fmt.Sprintf("%s://%s", opt.Network, addr))
 	conn, err := net.Dial(opt.Network, addr)
@@ -70,6 +92,7 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	return &RpcClient{
 		Client: rpc.NewClientWithCodec(clientCodec),
 		logger: logger,
+		option: opt,
 	}, nil
 }
 
@@ -81,7 +104,31 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 	if err != nil {
 		err = rrse.E(rrse.Op("call"), err)
 	}
-	loggerArgs := []any{"serviceMethod", serviceMethod, "args", *&args, "reply", reply, "error", err}
+	sanitizedArgs := make(Args, len(args))
+	if len(c.option.SensitiveWords) == 0 {
+		sanitizedArgs = args
+	} else {
+		for i, payload := range args {
+			sanitizedPayload := *payload
+			if sanitizedPayload.Store.Configuration != nil {
+				sanitizedConfig := sanitizedPayload.Store.Configuration
+				for key, value := range sanitizedConfig {
+					if slices.Index(c.option.SensitiveWords, key) != -1 {
+						switch value.(type) {
+						case string:
+							str, _ := value.(string)
+							sanitizedConfig[key] = maskString(str)
+						case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+							sanitizedConfig[key] = maskString(fmt.Sprintf("%d", value))
+						}
+					}
+				}
+				sanitizedPayload.Store.Configuration = sanitizedConfig
+			}
+			sanitizedArgs[i] = &sanitizedPayload
+		}
+	}
+	loggerArgs := []any{"serviceMethod", serviceMethod, "args", sanitizedArgs, "reply", reply, "error", err}
 	if err != nil {
 		c.logger.Error("Call", loggerArgs...)
 	} else {

@@ -48,9 +48,10 @@ func TestMain(m *testing.M) {
 		},
 	})
 	rpcClient, err = NewClient(cfg.RpcAddress, &Option{
-		Network:  "tcp",
-		Codec:    JsonCodec,
-		LogLevel: "debug",
+		Network:        "tcp",
+		Codec:          JsonCodec,
+		LogLevel:       "debug",
+		SensitiveWords: []string{"access_token", "app_key", "app_secret"},
 	})
 	if err != nil {
 		panic(err)
