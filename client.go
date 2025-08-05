@@ -104,31 +104,27 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 	if err != nil {
 		err = rrse.E(rrse.Op("call"), err)
 	}
-	sanitizedArgs := make(Args, len(args))
-	if len(c.option.SensitiveWords) == 0 {
-		sanitizedArgs = args
-	} else {
-		for i, payload := range args {
-			sanitizedPayload := *payload
-			sanitizedConfig := sanitizedPayload.Store.Configuration
-			if sanitizedConfig == nil {
-				continue
-			}
 
-			for key, value := range sanitizedConfig {
-				if slices.Index(c.option.SensitiveWords, key) != -1 {
-					switch value.(type) {
-					case string:
-						str, _ := value.(string)
-						sanitizedConfig[key] = maskString(str)
-					case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-						sanitizedConfig[key] = maskString(fmt.Sprintf("%d", value))
-					}
+	sanitizedArgs := make([]Payload, len(args))
+	for i, payload := range args {
+		sanitizedPayload := Payload{
+			Store: payload.Store,
+			Body:  payload.Body,
+		}
+		sanitizedPayload.Store.Configuration = make(Configuration)
+		for key, value := range payload.Store.Configuration {
+			if slices.Index(c.option.SensitiveWords, key) != -1 {
+				switch value.(type) {
+				case string:
+					str, _ := value.(string)
+					value = maskString(str)
+				case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+					value = maskString(fmt.Sprintf("%d", value))
 				}
 			}
-			sanitizedPayload.Store.Configuration = sanitizedConfig
-			sanitizedArgs[i] = &sanitizedPayload
+			sanitizedPayload.Store.Configuration[key] = value
 		}
+		sanitizedArgs[i] = sanitizedPayload
 	}
 	loggerArgs := []any{"serviceMethod", serviceMethod, "args", sanitizedArgs, "reply", reply, "error", err}
 	if err != nil {
