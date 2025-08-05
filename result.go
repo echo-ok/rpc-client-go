@@ -29,7 +29,7 @@ func (r Result) ConvertDataTo(dstPtr any) error {
 	// 检查 dstPtr 是否为指针
 	dstVo := reflect.ValueOf(dstPtr)
 	if dstVo.Kind() != reflect.Ptr {
-		return errors.New("rpclient: 'dstPtr' param type must be a pointer")
+		return errors.New("rpclient: 'dstPtr' param value type must be a pointer")
 	}
 
 	// 判断来源和目的数据类型是否可转换

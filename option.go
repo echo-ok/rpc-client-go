@@ -20,9 +20,12 @@ var defaultOption = Option{
 	LogLevel: "debug",
 	SensitiveWords: []string{
 		"app_key",
+		"china_app_key",
 		"key",
+		"china_app_secret",
 		"app_secret",
 		"secret",
+		"china_access_token",
 		"access_token",
 		"token",
 		"username",
