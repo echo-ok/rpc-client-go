@@ -110,21 +110,23 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 	} else {
 		for i, payload := range args {
 			sanitizedPayload := *payload
-			if sanitizedPayload.Store.Configuration != nil {
-				sanitizedConfig := sanitizedPayload.Store.Configuration
-				for key, value := range sanitizedConfig {
-					if slices.Index(c.option.SensitiveWords, key) != -1 {
-						switch value.(type) {
-						case string:
-							str, _ := value.(string)
-							sanitizedConfig[key] = maskString(str)
-						case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-							sanitizedConfig[key] = maskString(fmt.Sprintf("%d", value))
-						}
+			sanitizedConfig := sanitizedPayload.Store.Configuration
+			if sanitizedConfig == nil {
+				continue
+			}
+
+			for key, value := range sanitizedConfig {
+				if slices.Index(c.option.SensitiveWords, key) != -1 {
+					switch value.(type) {
+					case string:
+						str, _ := value.(string)
+						sanitizedConfig[key] = maskString(str)
+					case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+						sanitizedConfig[key] = maskString(fmt.Sprintf("%d", value))
 					}
 				}
-				sanitizedPayload.Store.Configuration = sanitizedConfig
 			}
+			sanitizedPayload.Store.Configuration = sanitizedConfig
 			sanitizedArgs[i] = &sanitizedPayload
 		}
 	}
