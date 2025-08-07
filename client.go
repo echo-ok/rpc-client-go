@@ -106,13 +106,9 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 	}
 
 	sanitizedArgs := make([]Payload, len(args))
-	for i, payload := range args {
-		sanitizedPayload := Payload{
-			Store: payload.Store,
-			Body:  payload.Body,
-		}
-		sanitizedPayload.Store.Configuration = make(Configuration)
-		for key, value := range payload.Store.Configuration {
+	for i, arg := range args {
+		cfg := make(Configuration, len(arg.Store.Configuration))
+		for key, value := range arg.Store.Configuration {
 			if slices.Index(c.option.SensitiveWords, key) != -1 {
 				switch value.(type) {
 				case string:
@@ -122,9 +118,14 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 					value = maskString(fmt.Sprintf("%d", value))
 				}
 			}
-			sanitizedPayload.Store.Configuration[key] = value
+			cfg[key] = value
 		}
-		sanitizedArgs[i] = sanitizedPayload
+		sanitizedArg := Payload{
+			Store: arg.Store,
+			Body:  arg.Body,
+		}
+		sanitizedArg.Store.Configuration = cfg
+		sanitizedArgs[i] = sanitizedArg
 	}
 	loggerArgs := []any{"serviceMethod", serviceMethod, "args", sanitizedArgs, "reply", reply, "error", err}
 	if err != nil {
