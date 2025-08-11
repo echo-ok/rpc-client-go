@@ -28,7 +28,7 @@ type RpcClient struct {
 
 func maskString(s string) string {
 	n := len(s)
-	switch len(s) {
+	switch n {
 	case 0:
 		return s
 	case 1, 2:
