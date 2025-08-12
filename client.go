@@ -28,19 +28,19 @@ type RpcClient struct {
 
 func maskString(s string) string {
 	n := len(s)
-	switch n {
-	case 0:
-		return s
-	case 1, 2:
-		// 长度小于等于 2，直接返回相同长度的 *
+	if n <= 2 {
 		return strings.Repeat("*", n)
-	case 3, 4, 5, 6:
-		// 保留首尾字符，中间用 * 填充
-		return s[:1] + strings.Repeat("*", n-2) + s[n-1:]
-	default:
-		// 长度大于 6 时，保留前 3 位和后 3 位，中间替换为 ******
-		return s[:3] + "******" + s[n-3:]
 	}
+	if n <= 6 {
+		keep := n / 2
+		return s[:keep] + strings.Repeat("*", n-keep*2) + s[n-keep:]
+	}
+	// 对于长字符串，保留前 25% 和后 25%
+	keep := n / 4
+	if keep < 3 {
+		keep = 3
+	}
+	return s[:keep] + strings.Repeat("*", n-keep*2) + s[n-keep:]
 }
 
 // NewClient creates a new RPC client to the given address.
