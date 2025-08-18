@@ -18,7 +18,7 @@ func NewPayload(store Store, body ...any) *Payload {
 	p := &Payload{
 		Store: store,
 	}
-	p.SetBody(body)
+	p.SetBody(body...)
 	return p
 }
 
