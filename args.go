@@ -68,22 +68,20 @@ func (a Args) Del(storeId string) Args {
 
 // SetBody 设置所有存储的查询参数
 func (a Args) SetBody(body any) Args {
-	aa := Args{}
-	for _, v := range a {
-		v.Body = body
-		aa = append(aa, v)
+	aa := make([]*Payload, len(a))
+	for k, v := range a {
+		v.SetBody(body)
+		aa[k] = v
 	}
 	return aa
 }
 
 // SetStoreBody 设置指定存储的查询参数
 func (a Args) SetStoreBody(storeId string, body any) Args {
-	aa := Args{}
-	for _, v := range a {
+	for k, v := range a {
 		if v.Store.ID == storeId {
-			v.Body = body
+			a[k].SetBody(body)
 		}
-		aa = append(aa, v)
 	}
-	return aa
+	return a
 }
