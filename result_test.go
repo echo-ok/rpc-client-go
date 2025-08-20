@@ -16,7 +16,7 @@ func TestConvertDataTo_NonPointerOutput(t *testing.T) {
 	var output map[string]string
 	err := r.ConvertDataTo(output) // 传入非指针
 	assert.Error(t, err)
-	assert.EqualError(t, err, "rpclient: 'dstPtr' param type must be a pointer")
+	assert.EqualError(t, err, "rpclient: 'dstPtr' param value type must be a pointer")
 }
 
 // 测试用例：TC02 - Data 无法被序列化为 JSON（例如包含循环引用）
