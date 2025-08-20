@@ -78,6 +78,7 @@ func TestTemuSemiOrderCustomizationInformation(t *testing.T) {
 }
 
 func TestTemuSemiOrder(t *testing.T) {
+	reply.Reset()
 	err := rpcClient.Call("Temu.Semi.Order.Query", NewArgs().Add(payload.SetBody(map[string]any{
 		"parentOrderSnList": []string{"PO-211-19255520399990061"},
 		"regionId":          211,
@@ -91,10 +92,63 @@ func TestTemuSemiOrder(t *testing.T) {
 
 		var pager struct {
 			Pager
-			Items []any `json:"items"`
+			Items []Result `json:"items"`
 		}
 		err = result.ConvertDataTo(&pager)
 		assert.NoError(t, err)
 		assert.Equal(t, pager.TotalCount, len(pager.Items))
+	}
+}
+
+func TestTemuGoods(t *testing.T) {
+	reply.Reset()
+	err := rpcClient.Call("Temu.Goods.Detail", NewArgs().Add(payload.SetBody(11)), &reply)
+	assert.NoError(t, err)
+	assert.Equal(t, len(reply.Results), 1)
+	for _, result := range reply.Results {
+		if !result.Ok {
+			continue
+		}
+
+		var data Result
+		err = result.ConvertDataTo(&data)
+		assert.NoError(t, err)
+	}
+}
+
+// 半托订单发货信息
+func TestTemuSemiOrderShippingInformation(t *testing.T) {
+	reply.Reset()
+	err := rpcClient.Call("Temu.Semi.Order.ShippingInformation", NewArgs().Add(payload.SetBody("PO-211-12969515438712454")), &reply)
+	assert.NoError(t, err)
+	assert.Equal(t, len(reply.Results), 1)
+	for _, result := range reply.Results {
+		if !result.Ok {
+			continue
+		}
+
+		var data any
+		err = result.ConvertDataTo(&data)
+		assert.NoError(t, err)
+	}
+}
+
+// 半托订单定制信息
+func TestTemuSemiCustomizationInformation(t *testing.T) {
+	reply.Reset()
+	err := rpcClient.Call("Temu.Semi.Order.CustomizationInformation", NewArgs().Add(payload.SetBody([]string{
+		"211-12969609810552454",
+		"211-12969567867512454",
+	})), &reply)
+	assert.NoError(t, err)
+	assert.Equal(t, len(reply.Results), 1)
+	for _, result := range reply.Results {
+		if !result.Ok {
+			continue
+		}
+
+		var data any
+		err = result.ConvertDataTo(&data)
+		assert.NoError(t, err)
 	}
 }
