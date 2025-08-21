@@ -89,3 +89,74 @@ func TestConvertDataTo_StructSuccess(t *testing.T) {
 	assert.Equal(t, "male", output.Sex)
 	assert.Equal(t, "I'm a boy", output.Description)
 }
+
+// 测试用例：TC06 - 目标指针为 nil
+func TestConvertDataTo_NilPointer(t *testing.T) {
+	r := Result{
+		Data: map[string]string{"key": "value"},
+	}
+
+	var output *map[string]string
+	err := r.ConvertDataTo(output)
+	assert.Error(t, err)
+	assert.EqualError(t, err, "rpclient: 'dstPtr' pointer cannot be nil")
+}
+
+// 测试用例：TC07 - 切片类型转换
+func TestConvertDataTo_SliceConversion(t *testing.T) {
+	inputData := []map[string]any{
+		{"name": "Alice", "age": 25},
+		{"name": "Bob", "age": 30},
+	}
+
+	r := Result{
+		Data: inputData,
+	}
+
+	var output []struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+	err := r.ConvertDataTo(&output)
+	require.NoError(t, err)
+	assert.Len(t, output, 2)
+	assert.Equal(t, "Alice", output[0].Name)
+	assert.Equal(t, 25, output[0].Age)
+	assert.Equal(t, "Bob", output[1].Name)
+	assert.Equal(t, 30, output[1].Age)
+}
+
+// 测试用例：TC08 - 基本类型转换
+func TestConvertDataTo_BasicTypeConversion(t *testing.T) {
+	r := Result{
+		Data: 42,
+	}
+
+	var output int
+	err := r.ConvertDataTo(&output)
+	require.NoError(t, err)
+	assert.Equal(t, 42, output)
+}
+
+// 测试用例：TC09 - Data 为 nil
+func TestConvertDataTo_DataNil(t *testing.T) {
+	r := Result{
+		Data: nil,
+	}
+
+	var output map[string]string
+	err := r.ConvertDataTo(&output)
+	assert.NoError(t, err)
+}
+
+// 测试用例：TC10 - 类型不兼容
+func TestConvertDataTo_TypeIncompatible(t *testing.T) {
+	r := Result{
+		Data: map[string]string{"key": "value"},
+	}
+
+	var output int
+	err := r.ConvertDataTo(&output)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "cannot be converted to")
+}
