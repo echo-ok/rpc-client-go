@@ -31,14 +31,16 @@ func maskString(s string) string {
 	if n <= 2 {
 		return strings.Repeat("*", n)
 	}
+
+	var keep int
 	if n <= 6 {
-		keep := n / 2
-		return s[:keep] + strings.Repeat("*", n-keep*2) + s[n-keep:]
-	}
-	// 对于长字符串，保留前 25% 和后 25%
-	keep := n / 4
-	if keep < 3 {
-		keep = 3
+		keep = n / 2
+	} else {
+		// 对于长字符串，保留前 25% 和后 25%
+		keep = n / 4
+		if keep < 3 {
+			keep = 3
+		}
 	}
 	return s[:keep] + strings.Repeat("*", n-keep*2) + s[n-keep:]
 }
@@ -112,8 +114,7 @@ func (c *RpcClient) Call(serviceMethod string, args Args, reply *Reply) error {
 			if slices.Index(c.option.SensitiveWords, key) != -1 {
 				switch value.(type) {
 				case string:
-					str, _ := value.(string)
-					value = maskString(str)
+					value = maskString(value.(string))
 				case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 					value = maskString(fmt.Sprintf("%d", value))
 				}
