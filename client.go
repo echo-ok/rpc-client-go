@@ -76,7 +76,14 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 			Level:     logLevel,
 		})).
 		WithGroup("rpclient").
-		With("dsn", fmt.Sprintf("%s://%s", opt.Network, addr))
+		With(
+			"dsn",
+			fmt.Sprintf("%s://%s", opt.Network, addr),
+			"codec",
+			opt.Codec,
+			"log_level",
+			logLevel.String(),
+		)
 	conn, err := net.Dial(opt.Network, addr)
 	if err != nil {
 		logger.Error("Dial", "error", err)
@@ -90,7 +97,6 @@ func NewClient(addr string, opt *Option) (*RpcClient, error) {
 	} else {
 		clientCodec = jsonrpc.NewClientCodec(conn)
 	}
-	logger.Debug("NewClient", "codec", opt.Codec, "error", nil)
 	return &RpcClient{
 		Client: rpc.NewClientWithCodec(clientCodec),
 		logger: logger,
