@@ -20,5 +20,6 @@ type Store struct {
 	Name          string        `json:"name"`          // 店铺名称
 	Env           string        `json:"env"`           // 运行环境（dev, test, prod）
 	Debug         bool          `json:"debug"`         // 是否开启调试模式
+	Timeout       int           `json:"timeout"`       // 请求超时时间
 	Configuration Configuration `json:"configuration"` // 配置信息
 }
