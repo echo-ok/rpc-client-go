@@ -12,9 +12,9 @@ func NewArgs() Args {
 	return Args{}
 }
 
-// isEmpty 判断变量是否为空
+// isEmptyValue 判断变量是否为空
 // nil, "", []T{}, [...]T{}, map[T]V{} 均为空
-func isEmpty(v any) bool {
+func isEmptyValue(v any) bool {
 	if v == nil {
 		return true
 	}
@@ -24,11 +24,7 @@ func isEmpty(v any) bool {
 	case reflect.Slice, reflect.Map, reflect.Array:
 		return vo.Len() == 0
 	case reflect.Ptr:
-		val := vo.Elem()
-		if val.Kind() == reflect.Array {
-			return val.Len() == 0
-		}
-		return false
+		return isEmptyValue(vo.Elem().Interface())
 	case reflect.String:
 		return vo.Len() == 0 || strings.TrimSpace(vo.String()) == ""
 	default:
@@ -47,7 +43,7 @@ func (a Args) Add(payload *Payload) Args {
 		// 同一个店铺，且参数一致的情况下忽略掉
 		v1 := v.Body
 		v2 := payload.Body
-		if v.Store.ID == payload.Store.ID && ((isEmpty(v1) && isEmpty(v2)) || reflect.DeepEqual(v1, v2)) {
+		if v.Store.ID == payload.Store.ID && ((isEmptyValue(v1) && isEmptyValue(v2)) || reflect.DeepEqual(v1, v2)) {
 			return a
 		}
 	}

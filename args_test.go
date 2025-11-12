@@ -102,3 +102,45 @@ func TestArgs_SetStoreBody(t *testing.T) {
 	assert.Equal(t, "abc", args[0].Body)
 	assert.Equal(t, "abc", args[1].Body)
 }
+
+func TestArgs_isEmptyValue(t *testing.T) {
+	// 空值
+	ptrString := ""
+	ptrMap := map[string]string{}
+	ptrArray := []string{}
+	ptrSlice := make([]any, 0)
+	values := []any{
+		nil,
+		"",
+		" ",
+		"	", // \t
+		[]string{},
+		[]int{},
+		map[string]string{},
+		map[int]string{},
+		map[int]int{},
+		map[string]int{},
+		map[string]any{},
+		map[any]any{},
+		map[any]string{},
+		map[any]int{},
+		&ptrString,
+		&ptrMap,
+		&ptrArray,
+		&ptrSlice,
+	}
+	for k, v := range values {
+		assert.True(t, isEmptyValue(v), "#%d", k)
+	}
+
+	// 非空值
+	values = []any{
+		0,
+		false,
+		[]string{""},
+		[]any{nil},
+	}
+	for k, v := range values {
+		assert.False(t, isEmptyValue(v), "#%d", k)
+	}
+}
