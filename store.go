@@ -15,6 +15,12 @@ func (c Configuration) GetString(key string) string {
 	return cast.ToString(c.read(key))
 }
 
+// Set 设置配置项，如果已存在则覆盖
+func (c Configuration) Set(key string, value any) Configuration {
+	c[key] = value
+	return c
+}
+
 type Store struct {
 	ID            string        `json:"id"`            // 店铺 ID
 	Name          string        `json:"name"`          // 店铺名称
