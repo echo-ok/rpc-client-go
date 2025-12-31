@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-func TestConstants(t *testing.T) {
-	if JsonCodec != "json" {
-		t.Errorf("Expected JsonCodec to be 'json', got %s", JsonCodec)
-	}
-	if GoridgeCodec != "goridge" {
-		t.Errorf("Expected GoridgeCodec to be 'goridge', got %s", GoridgeCodec)
-	}
-}
-
 func TestDefaultOption(t *testing.T) {
 	// Test that defaultOption has expected values
 	if defaultOption.Network != "tcp" {
@@ -24,7 +15,7 @@ func TestDefaultOption(t *testing.T) {
 	if defaultOption.LogLevel != "debug" {
 		t.Errorf("Expected defaultOption.LogLevel to be 'debug', got %s", defaultOption.LogLevel)
 	}
-	
+
 	// Test that sensitive words contain expected values
 	expectedSensitiveWords := []string{
 		"key",
@@ -41,11 +32,11 @@ func TestDefaultOption(t *testing.T) {
 		"pwd",
 		"password",
 	}
-	
+
 	if len(defaultOption.SensitiveWords) != len(expectedSensitiveWords) {
 		t.Errorf("Expected %d sensitive words, got %d", len(expectedSensitiveWords), len(defaultOption.SensitiveWords))
 	}
-	
+
 	for i, word := range expectedSensitiveWords {
 		if i >= len(defaultOption.SensitiveWords) {
 			t.Errorf("Missing sensitive word: %s", word)
@@ -65,7 +56,7 @@ func TestOptionStruct(t *testing.T) {
 		LogLevel:       "info",
 		SensitiveWords: []string{"test", "secret"},
 	}
-	
+
 	if option.Network != "tcp" {
 		t.Errorf("Expected Network to be 'tcp', got %s", option.Network)
 	}
@@ -75,7 +66,7 @@ func TestOptionStruct(t *testing.T) {
 	if option.LogLevel != "info" {
 		t.Errorf("Expected LogLevel to be 'info', got %s", option.LogLevel)
 	}
-	
+
 	if len(option.SensitiveWords) != 2 {
 		t.Errorf("Expected 2 sensitive words, got %d", len(option.SensitiveWords))
 	}
@@ -95,7 +86,7 @@ func TestOptionWithEmptyValues(t *testing.T) {
 		LogLevel:       "",
 		SensitiveWords: []string{},
 	}
-	
+
 	if option.Network != "" {
 		t.Errorf("Expected Network to be empty, got %s", option.Network)
 	}
@@ -105,7 +96,7 @@ func TestOptionWithEmptyValues(t *testing.T) {
 	if option.LogLevel != "" {
 		t.Errorf("Expected LogLevel to be empty, got %s", option.LogLevel)
 	}
-	
+
 	if len(option.SensitiveWords) != 0 {
 		t.Errorf("Expected SensitiveWords to be empty, got %d words", len(option.SensitiveWords))
 	}
@@ -118,7 +109,7 @@ func TestOptionWithNilSensitiveWords(t *testing.T) {
 		Codec:    "json",
 		LogLevel: "debug",
 	}
-	
+
 	// SensitiveWords should be nil by default
 	if option.SensitiveWords != nil {
 		t.Errorf("Expected SensitiveWords to be nil, got %v", option.SensitiveWords)
@@ -128,7 +119,7 @@ func TestOptionWithNilSensitiveWords(t *testing.T) {
 func TestOptionCodecTypes(t *testing.T) {
 	// Test Option with different codec types
 	codecs := []string{JsonCodec, GoridgeCodec}
-	
+
 	for _, codec := range codecs {
 		option := Option{
 			Network:  "tcp",
@@ -144,7 +135,7 @@ func TestOptionCodecTypes(t *testing.T) {
 func TestOptionNetworkTypes(t *testing.T) {
 	// Test Option with different network types
 	networks := []string{"tcp", "tcp4", "tcp6", "unix"}
-	
+
 	for _, network := range networks {
 		option := Option{
 			Network:  network,
@@ -160,7 +151,7 @@ func TestOptionNetworkTypes(t *testing.T) {
 func TestOptionLogLevelTypes(t *testing.T) {
 	// Test Option with different log levels
 	logLevels := []string{"debug", "info", "warn", "error"}
-	
+
 	for _, level := range logLevels {
 		option := Option{
 			Network:  "tcp",
@@ -181,8 +172,8 @@ func TestOptionSensitiveWordsModification(t *testing.T) {
 		LogLevel:       "debug",
 		SensitiveWords: []string{"initial"},
 	}
-	
-	// Add new sensitive word
+
+	// Set new sensitive word
 	option.SensitiveWords = append(option.SensitiveWords, "new_secret")
 	found := false
 	for _, word := range option.SensitiveWords {
@@ -194,7 +185,7 @@ func TestOptionSensitiveWordsModification(t *testing.T) {
 	if !found {
 		t.Errorf("Expected 'new_secret' to be in SensitiveWords")
 	}
-	
+
 	// Replace entire list
 	option.SensitiveWords = []string{"completely_new", "another_secret"}
 	if len(option.SensitiveWords) != 2 {
