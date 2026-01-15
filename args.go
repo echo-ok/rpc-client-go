@@ -21,6 +21,8 @@ func isEmptyValue(v any) bool {
 
 	vo := reflect.ValueOf(v)
 	switch vo.Kind() {
+	case reflect.Invalid:
+		return true
 	case reflect.Slice, reflect.Map, reflect.Array:
 		return vo.Len() == 0
 	case reflect.Ptr:
