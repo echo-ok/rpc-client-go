@@ -66,9 +66,11 @@ func (a Args) Del(storeId string) Args {
 
 // SetBody 设置所有存储的查询参数
 func (a Args) SetBody(body any) Args {
-	aa := make([]*Payload, len(a))
+	aa := make(Args, len(a))
 	for k, v := range a {
-		aa[k] = v.SetBody(body)
+		p := &Payload{Store: v.Store}
+		p.SetBody(body)
+		aa[k] = p
 	}
 	return aa
 }
