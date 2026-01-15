@@ -42,11 +42,11 @@ func (a Args) IsEmpty() bool {
 // Add 添加查询
 func (a Args) Add(payload *Payload) Args {
 	for _, v := range a {
-		// 同一个店铺，且参数一致的情况下忽略掉
 		v1 := v.Body
 		v2 := payload.Body
 		if v.Store.ID == payload.Store.ID && ((isEmptyValue(v1) && isEmptyValue(v2)) || reflect.DeepEqual(v1, v2)) {
-			return a
+			// 同一个店铺，且参数一致的情况下忽略掉
+			return append(Args{}, a...)
 		}
 	}
 	return append(a, payload)
