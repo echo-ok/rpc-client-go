@@ -76,6 +76,9 @@ func (a Args) SetBody(body any) Args {
 
 // SetStoreBody 设置指定存储的查询参数
 func (a Args) SetStoreBody(storeId string, body any) Args {
+	if storeId == "" {
+		return a
+	}
 	for k, v := range a {
 		if v.Store.ID == storeId {
 			a[k].SetBody(body)
