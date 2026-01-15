@@ -68,8 +68,7 @@ func (a Args) Del(storeId string) Args {
 func (a Args) SetBody(body any) Args {
 	aa := make([]*Payload, len(a))
 	for k, v := range a {
-		v.SetBody(body)
-		aa[k] = v
+		aa[k] = v.SetBody(body)
 	}
 	return aa
 }
