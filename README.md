@@ -150,8 +150,8 @@ for _, result := range reply.Results {
 
 ```go
 args := rpclient.NewArgs()
-args.Add(rpclient.NewPayload(store1).SetBody(params1))
-args.Add(rpclient.NewPayload(store2).SetBody(params2))
+args = args.Add(rpclient.NewPayload(store1).SetBody(params1))
+args = args.Add(rpclient.NewPayload(store2).SetBody(params2))
 
 var reply rpclient.Reply
 rpcClient.Call("Some.Service.Method", args, &reply)
